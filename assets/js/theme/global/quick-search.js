@@ -2,6 +2,7 @@ import _ from 'lodash';
 import utils from '@bigcommerce/stencil-utils';
 import StencilDropDown from './stencil-dropdown';
 import urlUtils from '../common/utils/url-utils';
+import queries from "../custom/search-query-mapping"
 
 export default function () {
     const TOP_STYLING = 'top: 49px;';
@@ -80,14 +81,19 @@ export default function () {
         event.preventDefault();
 
         const $target = $(event.currentTarget);
-        const searchQuery = $target.find('input').val();
+        const searchQuery = $target.find('input').val().trim();
         const searchUrl = $target.data('url');
 
         if (searchQuery.length === 0) {
             return;
         }
 
-        urlUtils.goToUrl(`${searchUrl}?search_query=${searchQuery}`);
-        window.location.reload();
+        const redirectUrl = queries[searchQuery.toLowerCase()];
+        if(redirectUrl) {
+            window.location.href = redirectUrl
+        } else {
+            urlUtils.goToUrl(`${searchUrl}?search_query=${searchQuery}`);
+            window.location.reload();
+        }
     });
 }
